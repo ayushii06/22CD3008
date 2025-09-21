@@ -42,6 +42,14 @@ export default function LandingPage() {
         setError("Each entry must have a long URL.");
         return false;
       }
+
+      //if url already exists in the list
+      const urlCount = inputs.filter(i => i.url === input.url).length;
+      if (urlCount > 1) {
+        setError(`Duplicate URL found: ${input.url}`);
+        return false;
+      }
+      
       try {
         new URL(input.url); // validate URL format
       } catch {
