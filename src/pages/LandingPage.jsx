@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
 import handleShorten from "../api/Api";
+import { Log } from "../../../logging/middleware";
 
 
 export default function LandingPage() {
@@ -29,6 +30,7 @@ export default function LandingPage() {
     if (inputs.length < 5) {
       setInputs([...inputs, { url: "", validity: "", code: "" }]);
     }
+
   };
 
   const removeInput = (index) => {
@@ -39,6 +41,7 @@ export default function LandingPage() {
   const validateInputs = () => {
     for (const input of inputs) {
       if (!input.url) {
+        Log(new Error().stack, "error", "LandingPage", "Each entry must have a long URL.");
         setError("Each entry must have a long URL.");
         return false;
       }
@@ -46,21 +49,25 @@ export default function LandingPage() {
       //if url already exists in the list
       const urlCount = inputs.filter(i => i.url === input.url).length;
       if (urlCount > 1) {
+            Log(new Error().stack, "error", "LandingPage", `Duplicate URL found: ${input.url}`);
         setError(`Duplicate URL found: ${input.url}`);
         return false;
       }
-      
+
       try {
         new URL(input.url); // validate URL format
       } catch {
+            Log(new Error().stack, "error", "LandingPage", `Invalid URL format: ${input.url}`);
         setError(`Invalid URL format: ${input.url}`);
         return false;
       }
       if (input.validity && isNaN(Number(input.validity))) {
+            Log(new Error().stack, "error", "LandingPage", "Validity must be a number (minutes).");
         setError("Validity must be a number (minutes).");
         return false;
       }
     }
+
     setError("");
     return true;
   };
@@ -76,10 +83,12 @@ export default function LandingPage() {
 
     if (!res) {
       //error
+      Log(new Error().stack, "error", "LandingPage", "A custom shortcode you provided already exists.");
       setError("A custom shortcode you provided already exists. Please try another.");
       return;
     }
 
+    Log(new Error().stack, "info", "LandingPage", `Successfully shortened URLs: ${res.map(r => r.longUrl).join(", ")}`);
     // URLs are successfully shortened
     if (res.length === 0) {
       setError("No valid URLs were shortened by the server.");
@@ -95,6 +104,7 @@ export default function LandingPage() {
     setInputs([{ url: "", validity: "", code: "" }]);
 
   } catch (err) {
+    Log(new Error().stack, "error", "LandingPage", `API Error: ${err.message}`);
     console.error("API Error:", err);
     setError("An error occurred while shortening URLs. Please try again.");
   } finally {

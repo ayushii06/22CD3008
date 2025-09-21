@@ -1,3 +1,4 @@
+import { Log } from "../../../logging/middleware";
 const generateCode = () => Math.random().toString(36).substring(2, 7);
 
 function handleShorten({ list }) {
@@ -13,6 +14,7 @@ function handleShorten({ list }) {
     // Check for duplicate short codes
     const exists = processedLinks.find((l) => l.shortCode === shortCode);
     if (exists) {
+      Log(new Error().stack, "error", "LandingPage", `Duplicate shortcode: ${shortCode}`);
       //return error
       return null; 
     }
@@ -28,7 +30,10 @@ function handleShorten({ list }) {
     };
 
     processedLinks.push(newLink);
+    
   }
+
+  Log(new Error().stack, "info", "LandingPage", `Processed URLs: ${processedLinks.map(l => l.longUrl).join(", ")}`);
 
   return processedLinks;
 }
