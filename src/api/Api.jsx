@@ -1,4 +1,4 @@
-import { Log } from "../../../logging/middleware";
+import { Log } from "../logging/middleware";
 const generateCode = () => Math.random().toString(36).substring(2, 7);
 
 function handleShorten({ list }) {

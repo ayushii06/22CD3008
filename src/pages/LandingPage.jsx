@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
 import handleShorten from "../api/Api";
-import { Log } from "../../../logging/middleware";
+import { Log } from "../logging/middleware";
 
 
 export default function LandingPage() {
